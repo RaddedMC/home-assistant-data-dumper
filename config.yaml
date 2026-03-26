@@ -1,6 +1,6 @@
 name: "Radded's Home Assistant Data Dumper"
 description: "Dump time-series entity state data from Home Assistant."
-version: 0.67
+version: 0.691
 slug: "radded_data_dumper"
 init: false
 arch:
@@ -9,3 +9,19 @@ arch:
   - armhf
   - armv7
   - i386
+startup: services
+ports:
+  8067/tcp: 8067
+
+options:
+  beer: true
+  wine: true
+  cock: false
+  name: "your mom"
+  year: 2067
+schema:
+  beer: bool
+  wine: bool
+  cock: bool
+  name: str
+  year: int
