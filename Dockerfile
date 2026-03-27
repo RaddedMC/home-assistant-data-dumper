@@ -3,14 +3,11 @@ FROM $BUILD_FROM
 
 # Install requirements
 RUN \
-    apt-get update \
-    && apt-get install -y --no-install-recommends \
+    apk add --no-cache \
         python3 \
-        python3-pip \
-    && rm -rf /var/lib/apt/lists
+        py3-flask \
 
 # Use CWD
 COPY ./app
-RUN pip install -r requirements.txt
 
 CMD [ "python", "app.py" ]
