@@ -3,11 +3,14 @@ FROM $BUILD_FROM
 
 # Install requirements
 RUN \
-    apk add --no-cache \
-        python3
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python3 \
+        python3-pip \
+    && rm -rf /var/lib/apt/lists
 
 # Use CWD
-COPY run.sh /
-RUN chmod a+x /run.sh
+COPY ./app
+RUN pip install -r requirements.txt
 
-CMD [ "/run.sh" ]
+CMD [ "python", "app.py" ]
