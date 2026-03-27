@@ -1,5 +1,5 @@
 #!/usr/bin/with-contenv bashio
 
-echo "Hello world!"
+bashio::log.info "Starting Home Assistant Data Dumper"
 
-python3 -m http.server 8067
+exec python3 -m app.main

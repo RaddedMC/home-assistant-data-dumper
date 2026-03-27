@@ -10,6 +10,17 @@ arch:
   - armv7
   - i386
 startup: services
+homeassistant_api: true
 ports:
   8067/tcp: 8067
 webui: "http://[HOST]:[PORT:8067]"
+options:
+  log_level: info
+  poll_interval_seconds: 30
+  history_chunk_hours: 24
+  export_row_limit: 500000
+schema:
+  log_level: list(trace|debug|info|notice|warning|error|fatal)?
+  poll_interval_seconds: int(5,3600)?
+  history_chunk_hours: int(1,168)?
+  export_row_limit: int(1000,5000000)?
