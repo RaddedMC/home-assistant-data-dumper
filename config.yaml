@@ -1,6 +1,6 @@
 name: "Radded's Home Assistant Data Dumper"
 description: "Dump time-series entity state data from Home Assistant."
-version: 0.694
+version: 0.6952111
 slug: "radded_data_dumper"
 init: false
 arch:
@@ -24,3 +24,7 @@ schema:
   poll_interval_seconds: int(5,3600)?
   history_chunk_hours: int(1,168)?
   export_row_limit: int(1000,5000000)?
+requirements:
+  python_script:
+    - Flask==3.1.3
+    - requests==2.33.0

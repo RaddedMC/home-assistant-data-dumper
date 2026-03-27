@@ -1,14 +1,23 @@
 ARG BUILD_FROM
-FROM $BUILD_FROM
+FROM ${BUILD_FROM}
+
+# Set environment variables
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
 # Install requirements
 RUN \
-    apk add --no-cache \
-    python3 \
-    py3-pip
-
-COPY requirements.txt /tmp/requirements.txt
-RUN python3 -m pip install --no-cache-dir -r /tmp/requirements.txt
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python3 \
+        python3-pip \
+    && pip3 install --no-cache-dir -U \
+        setuptools \
+        wheel \
+    && pip3 install --no-cache-dir \
+        Flask \
+        requests \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Use CWD
 COPY app /app
