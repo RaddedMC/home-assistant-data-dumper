@@ -1,6 +1,6 @@
 name: "Radded's Home Assistant Data Dumper"
 description: "Dump time-series entity state data from Home Assistant."
-version: 0.691
+version: 0.692
 slug: "radded_data_dumper"
 init: false
 arch:
@@ -12,16 +12,4 @@ arch:
 startup: services
 ports:
   8067/tcp: 8067
-
-options:
-  beer: true
-  wine: true
-  cock: false
-  name: "your mom"
-  year: 2067
-schema:
-  beer: bool
-  wine: bool
-  cock: bool
-  name: str
-  year: int
+webui: "http://[HOST]:[PORT:8067]"
