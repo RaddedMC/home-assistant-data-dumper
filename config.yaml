@@ -1,6 +1,6 @@
 name: "Radded's Home Assistant Data Dumper"
 description: "Dump time-series entity state data from Home Assistant."
-version: 0.692
+version: 0.0000067
 slug: "radded_data_dumper"
 init: false
 arch:
