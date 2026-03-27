@@ -7,6 +7,9 @@ RUN \
     python3 \
     py3-pip
 
+COPY requirements.txt /tmp/requirements.txt
+RUN python3 -m pip install --no-cache-dir -r /tmp/requirements.txt
+
 # Use CWD
 COPY app /app
 COPY run.sh /
