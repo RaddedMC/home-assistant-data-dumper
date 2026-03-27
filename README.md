@@ -54,13 +54,14 @@ For the below tables, only ONE of these tables should be linked to any given row
         - A boolean to identify whether the light is on or off
     - TODO: Add more
 
-- `DomainSwitchState`:
+- `DomainPersonState`:
+    - WILL FOCUS ON THIS FIRST. This is not a recognized domain in the developer docs, despite their being an entity ID class for it. I don't quite understand this.
     - `ID NOT NULL UNIQUE INTEGER`:
         - some unique identifier
     - `StateHistoryID NOT NULL FOREIGN KEY StateHistory.ID`:
         - Foreign Key to StateHistoryID
-    - `ON BOOL NOT NULL`:
-        - A boolean to identify whether the switch is on or off
+    - `IsHome BOOL NOT NULL`:
+        - A boolean to identify whether the person is Home or somewhere else.
 
 - `DomainBinarySensorState`:
     - WILL FOCUS ON THIS FIRST
@@ -72,6 +73,14 @@ For the below tables, only ONE of these tables should be linked to any given row
         - A boolean to identify whether the binary sensor is on or off
     - `DeviceClass STR NULLABLE`:
         - A string that defines the Device Class of the binary sensor. To be used later!
+
+- `DomainSwitchState`:
+    - `ID NOT NULL UNIQUE INTEGER`:
+        - some unique identifier
+    - `StateHistoryID NOT NULL FOREIGN KEY StateHistory.ID`:
+        - Foreign Key to StateHistoryID
+    - `ON BOOL NOT NULL`:
+        - A boolean to identify whether the switch is on or off
 
 - `DomainLockState`:
     - `ID NOT NULL UNIQUE INTEGER`:
@@ -116,3 +125,4 @@ For the below tables, only ONE of these tables should be linked to any given row
         - Foreign Key to StateHistoryID
     - `PlayState NOT NULL ENUM`:
         - Classes: `Off, On, Idle, Playing, Paused, Buffering`
+
