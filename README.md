@@ -1,7 +1,5 @@
 # Radded's Home Assistant Data Dumper
 
-## Development Roadmap
-
 ## Description
 A robust app to dump the time-series Entity state data from Home Assistant. This application will pull all history that is currently available, and routinely poll as states change. This will create a large and detailed dataset that can be used for training Machine Learning models.
 
@@ -14,3 +12,107 @@ A robust app to dump the time-series Entity state data from Home Assistant. This
     - Entity domains (whitelist, blacklist)
     - Entity areas (whitelist, blacklist)
     - Entities (whitelist, blacklist)
+
+## Database
+- `StateHistory`: A table that lists the changes to all Entities
+    - WILL FOCUS ON THIS FIRST
+    - `ID NOT NULL UNIQUE INTEGER`:
+        - some unique identifier
+    - `TimeStamp NOT NULL INTEGER`:
+        - The data and time that the state change happened
+    - `EntityID NOT NULL STR LENGTH X`:
+        - The unique ID of the entity in Home Assistant
+        - TODO: What is Home Assistant's maximum entity ID length?
+    - `EntityArea NULLABLE STR LENGTH X`:
+        - The area that the entity belongs to
+        - TODO: What is the maximum area name length in Home Assistant?
+    - `AttributeJSON NULLABLE STR LENGTH X`
+        - The additional Attributes that may be on any particular entity
+        - TODO: Do we need this? How long should this be?
+    - `IsOffline BOOLEAN NOT NULL`
+        - If the device is Unavailable, Offline, or Unknown, we will treat it as Offline.
+
+- `AutomationTrigger`: A table, linking to `StateHistory`, that shows which entities and automations triggered a particular entity state change.
+    - `ID NOT NULL UNIQUE INTEGER`:
+        - some unique identifier
+    - `StateHistoryID NOT NULL FOREIGN KEY StateHistory.ID`:
+        - Foreign Key to StateHistoryID
+    - `TriggereSdByAutomationID NULLABLE STR`:
+        - The entity of the automation that triggered this change, if applicable.
+    - `TriggeredByEntityName NULLABLE STR`:
+        - The name of the entity that triggered the automation that triggered this change, if applicable.
+
+For the below tables, only ONE of these tables should be linked to any given row of `StateHistoryID`.
+
+- `DomainLightState`: A table that shows the specific information for a Light entity, linking to `StateHistory`.
+    - WILL FOCUS ON THIS FIRST
+    - `ID NOT NULL UNIQUE INTEGER`:
+        - some unique identifier
+    - `StateHistoryID NOT NULL FOREIGN KEY StateHistory.ID`:
+        - Foreign Key to StateHistoryID
+    - `ON BOOL NOT NULL`:
+        - A boolean to identify whether the light is on or off
+    - TODO: Add more
+
+- `DomainSwitchState`:
+    - `ID NOT NULL UNIQUE INTEGER`:
+        - some unique identifier
+    - `StateHistoryID NOT NULL FOREIGN KEY StateHistory.ID`:
+        - Foreign Key to StateHistoryID
+    - `ON BOOL NOT NULL`:
+        - A boolean to identify whether the switch is on or off
+
+- `DomainBinarySensorState`:
+    - WILL FOCUS ON THIS FIRST
+    - `ID NOT NULL UNIQUE INTEGER`:
+        - some unique identifier
+    - `StateHistoryID NOT NULL FOREIGN KEY StateHistory.ID`:
+        - Foreign Key to StateHistoryID
+    - `ON BOOL NOT NULL`:
+        - A boolean to identify whether the binary sensor is on or off
+    - `DeviceClass STR NULLABLE`:
+        - A string that defines the Device Class of the binary sensor. To be used later!
+
+- `DomainLockState`:
+    - `ID NOT NULL UNIQUE INTEGER`:
+        - some unique identifier
+    - `StateHistoryID NOT NULL FOREIGN KEY StateHistory.ID`:
+        - Foreign Key to StateHistoryID
+    - `State ENUM NOT NULL`:
+        - Classes: `Jammed, Open, Opening, Locked, Locking, Unlocked, Unlocking`
+
+- `DomainVacuumState`:
+    - `ID NOT NULL UNIQUE INTEGER`:
+        - some unique identifier
+    - `StateHistoryID NOT NULL FOREIGN KEY StateHistory.ID`:
+        - Foreign Key to StateHistoryID
+    - `State ENUM NOT NULL`:
+        - Classes: `Cleaning, Docked, Error, Idle, Paused, Returning`
+
+- `DomainFanState`:
+    - `ID NOT NULL UNIQUE INTEGER`:
+        - some unique identifier
+    - `StateHistoryID NOT NULL FOREIGN KEY StateHistory.ID`:
+        - Foreign Key to StateHistoryID
+    - `ON BOOL NOT NULL`:
+        - A boolean to identify whether the fan is on or off
+
+- `DomainNumericSensorState`:
+    - This table represents Sensor entities which have a numeric value.
+    - The value is determined by the existence of the attribute `unit_of_measurement`.
+    - `ID NOT NULL UNIQUE INTEGER`:
+        - some unique identifier
+    - `StateHistoryID NOT NULL FOREIGN KEY StateHistory.ID`:
+        - Foreign Key to StateHistoryID
+    - `Value FLOAT NOT NULL`:
+        - The current value of the sensor
+    - `UnitOfMeasurement STR NOT NULL LENGTH X`:
+        - TODO: How long is the unit of measurement string?
+
+- `DomainMediaPlayerState`:
+    - `ID NOT NULL UNIQUE INTEGER`:
+        - some unique identifier
+    - `StateHistoryID NOT NULL FOREIGN KEY StateHistory.ID`:
+        - Foreign Key to StateHistoryID
+    - `PlayState NOT NULL ENUM`:
+        - Classes: `Off, On, Idle, Playing, Paused, Buffering`
