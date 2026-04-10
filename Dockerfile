@@ -1,13 +1,17 @@
 ARG BUILD_FROM
-FROM $BUILD_FROM
+FROM ${BUILD_FROM}
 
 # Install requirements
 RUN \
-    apk add --no-cache \
-        python3 \
-        py3-flask \
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python3 python3-flask \
+    && rm -rf /var/lib/apt/lists/*
+
+# Working directory
+WORKDIR /
 
 # Use CWD
-COPY ./app
+COPY app /
 
-CMD [ "python", "app.py" ]
+CMD [ "python3", "main.py" ]
