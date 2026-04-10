@@ -1,10 +1,15 @@
-ARG BUILD_FROM
-FROM $BUILD_FROM
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:bookworm
+FROM ${BUILD_FROM}
 
 # Install requirements
 RUN \
-    apk add --no-cache \
-        python3
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Working directory
+WORKDIR /data
 
 # Use CWD
 COPY run.sh /
