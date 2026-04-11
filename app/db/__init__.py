@@ -1,3 +1,4 @@
-from .db import EntityHistoryDatabase
+from . import db
+from .db import DomainGeneric as Domain
 
-__all__ = ["EntityHistoryDatabase"]
+__all__ = ["db", "Domain"]

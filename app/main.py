@@ -1,6 +1,6 @@
 from flask import Flask
 from util import log
-from db import EntityHistoryDatabase
+from db.db import EntityHistoryDatabase
 
 app = Flask(__name__)
 

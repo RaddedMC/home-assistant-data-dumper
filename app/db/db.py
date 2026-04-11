@@ -1,5 +1,7 @@
 import sqlite3
 from util import log
+from . import domains
+
 
 class EntityHistoryDatabase:
     def __init__(self):
@@ -29,31 +31,49 @@ class EntityHistoryDatabase:
             IsUnavailable BOOLEAN NOT NULL
         );
         """)
-        
+        log.info("-> Created EntityHistory table")
+
         ### Create automation trigger table
-        
+
         # ID: A unique identifier for the particular automation trigger entry.
         # StateHistoryID: A foreign key that references an EntityHistory item.
-        
+
         # TriggeredByAutomationID: A string that can be null. References the ID of the automation that triggered the state change.
         # TriggeredByAutomationName: A string that can be null. References the name of the automation that triggered the state change.
-        
+
         # TriggeredByEntityID: A string that can be null. References the ID of the entity that triggered the automation that triggered the state change.
         # TriggeredByEntityName: A string that can be null. References the name of the entity that triggered the automation that triggered the state change.
-        
+
         self.cur.execute("""
         CREATE TABLE IF NOT EXISTS AutomationTrigger (
             ID INTEGER PRIMARY KEY,
-            StateHistoryID NOT NULL FOREIGN KEY,
+            StateHistoryID INTEGER NOT NULL,
             TriggeredByAutomationID TEXT,
             TriggeredByAutomationName TEXT,
             TriggeredByEntityID TEXT,
-            TriggeredByEntityName TEXT
+            TriggeredByEntityName TEXT,
+            FOREIGN KEY (StateHistoryID) REFERENCES EntityHistory(ID)
         );
         """)
+        log.info("-> Created AutomationTrigger table")
+
+        ### Create tables for all domains
+        for domain_class in self._iter_domain_classes(DomainGeneric):
+            create_table_sql = domain_class.create_table()
+            if create_table_sql:
+                self.cur.execute(create_table_sql)
+                print(create_table_sql)
+                log.info(f"-> Created {domain_class.__name__} table")
 
         ### Commit all of the above
         self.conn.commit()
+
+    @staticmethod
+    def _iter_domain_classes(domain_parent):
+        # Walk the full inheritance tree so nested specializations are included.
+        for child in domain_parent.__subclasses__():
+            yield child
+            yield from EntityHistoryDatabase._iter_domain_classes(child)
 
 class EntityHistoryEntry:
     # An entry in the Entity History database.
@@ -83,10 +103,15 @@ class DomainGeneric:
     # A generic Domain.
         # State, can be whatever you want! This will be treated as the primary state for the Domain.
         # get_insert_command, since we will change this for each Domain
+        # create_table, which is not an object method and will be called once at runtime to create the relevant domain database tables.
     def __init__(self, state):
         self.state = state
 
     def get_insert_command(self, StateHistoryID):
+        return ""
+
+    @staticmethod
+    def create_table():
         return ""
 
 class AutomationTrigger:
@@ -96,7 +121,7 @@ class AutomationTrigger:
         self.triggered_by_automation_name = triggered_by_automation_name
         self.triggered_by_entity_id = triggered_by_entity_id
         self.triggered_by_entity_name = triggered_by_entity_name
-        
+
 
 # Log flow:
 # Create EntityHistoryEntry
