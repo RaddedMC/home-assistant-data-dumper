@@ -1,3 +1,3 @@
-__all__ = ["db"]
+from .db import EntityHistoryDatabase
 
-from . import db
+__all__ = ["EntityHistoryDatabase"]
