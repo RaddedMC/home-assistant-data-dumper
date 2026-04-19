@@ -1,4 +1,4 @@
-from db import Domain
+from .generic import Domain
 class DomainPerson(Domain):
     # A Person.
     # This domain might also be able to be re-used for Device Tracker.

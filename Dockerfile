@@ -14,4 +14,4 @@ WORKDIR /
 # Use CWD
 COPY app /
 
-CMD [ "python3", "main.py" ]
+CMD [ "python3", "app.py" ]

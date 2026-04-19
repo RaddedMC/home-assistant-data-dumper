@@ -1,4 +1,4 @@
-from db import Domain
+from .generic import Domain
 class DomainLight(Domain):
     # A Light.
     # TODO: We are starting with just keeping track of ON and OFF.
@@ -13,7 +13,7 @@ class DomainLight(Domain):
         return """CREATE TABLE IF NOT EXISTS DomainLightState (
             ID INTEGER PRIMARY KEY,
             StateHistoryID INTEGER NOT NULL,
-            ON BOOLEAN NOT NULL,
+            isON BOOLEAN NOT NULL,
             FOREIGN KEY (StateHistoryID) REFERENCES EntityHistory(ID)
         );
         """

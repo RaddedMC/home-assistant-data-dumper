@@ -1,7 +1,8 @@
 import sqlite3
 from util import log
+from util import placeholders
 from . import domains
-
+import sys
 
 class EntityHistoryDatabase:
     def __init__(self):
@@ -10,6 +11,34 @@ class EntityHistoryDatabase:
         log.info("Creating database...")
         self.conn = sqlite3.connect("radded_data_dumper.sqlite3")
         self.cur = self.conn.cursor()
+        
+        self.cur.execute("""
+        CREATE TABLE IF NOT EXISTS DatadumperMigrations (
+            version INT PRIMARY KEY,
+            migratedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+        
+        ### Check database version
+        local_db_version = self.cur.execute("""
+        SELECT MAX(version) FROM DatadumperMigrations;
+        """).fetchone()[0]
+        
+        # First time launch
+        if local_db_version is None:
+            log.info("Detected first time launch")
+            self.cur.execute("""
+            INSERT INTO DatadumperMigrations (version) VALUES (1);
+            """)
+        elif local_db_version == placeholders.DATABASE_VERSION:
+            log.info("Database version unchanged, skipping creation.")
+            return
+        elif local_db_version > placeholders.DATABASE_VERSION:
+            log.error(f"Database is newer than application! Installed: {local_db_version}, Expected: {placeholders.DATABASE_VERSION}")
+            sys.exit(1)
+        elif local_db_version < placeholders.DATABASE_VERSION:
+            log.error(f"Database is older than application! Please perform a migration before continuing. Installed: {local_db_version}, Expected: {placeholders.DATABASE_VERSION}")
+            sys.exit(1)
 
         ### Create top level entity history table
         # ID: A unique identifier for the particular state change.
@@ -32,6 +61,7 @@ class EntityHistoryDatabase:
         );
         """)
         log.info("-> Created EntityHistory table")
+
 
         ### Create automation trigger table
 
@@ -57,23 +87,33 @@ class EntityHistoryDatabase:
         """)
         log.info("-> Created AutomationTrigger table")
 
-        ### Create tables for all domains
-        for domain_class in self._iter_domain_classes(DomainGeneric):
-            create_table_sql = domain_class.create_table()
-            if create_table_sql:
-                self.cur.execute(create_table_sql)
-                print(create_table_sql)
-                log.info(f"-> Created {domain_class.__name__} table")
 
+        ### Create tables for all domains
+        # Get the list of names of modules
+        domain_module_names = domains.list_domains()
+        domain_modules = []
+        # Get the modules
+        for module_name in domain_module_names:
+            # Don't call the generic domain
+            if module_name == "generic":
+                continue
+            
+            domain_modules.append((module_name, sys.modules["db.domains."+module_name]))
+        
+        # Get the classes from the modules (save them)
+        self.domain_classes = [('Domain' + module_name.title(), getattr(module, 'Domain' + module_name.title())) for module_name, module in domain_modules]
+        
+        # Use the create_table from each class to create a matching table in the database
+        for domain_name, domain_class in self.domain_classes:
+            if hasattr(domain_class, 'create_table'):
+                print(domain_class.create_table())
+                self.cur.execute(domain_class.create_table())
+                log.info(f"-> Created {domain_name} table")
+            else:
+                log.info(f"-> Error! {domain_name} does not have a create_table function.")
+    
         ### Commit all of the above
         self.conn.commit()
-
-    @staticmethod
-    def _iter_domain_classes(domain_parent):
-        # Walk the full inheritance tree so nested specializations are included.
-        for child in domain_parent.__subclasses__():
-            yield child
-            yield from EntityHistoryDatabase._iter_domain_classes(child)
 
 class EntityHistoryEntry:
     # An entry in the Entity History database.
@@ -98,21 +138,6 @@ class Entity:
         self.entity_area = entity_area
         self.attributes = attributes
         self.unavailable = unavailable
-
-class DomainGeneric:
-    # A generic Domain.
-        # State, can be whatever you want! This will be treated as the primary state for the Domain.
-        # get_insert_command, since we will change this for each Domain
-        # create_table, which is not an object method and will be called once at runtime to create the relevant domain database tables.
-    def __init__(self, state):
-        self.state = state
-
-    def get_insert_command(self, StateHistoryID):
-        return ""
-
-    @staticmethod
-    def create_table():
-        return ""
 
 class AutomationTrigger:
     # An automation trigger. In Home Assistant, this is read as "X set to state Y triggered by automation A triggered by state of B"
