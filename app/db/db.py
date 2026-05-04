@@ -111,6 +111,7 @@ class Entity:
         self.attributes = attributes
         self.unavailable = unavailable
 
+# TODO: Include data for "X set to state Y by action?"
 
 class AutomationTrigger:
     # An automation trigger. In Home Assistant, this is read as "X set to state Y triggered by automation A triggered by state of B"

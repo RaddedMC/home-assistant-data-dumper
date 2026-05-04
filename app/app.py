@@ -18,29 +18,32 @@ def main():
     app_db = EntityHistoryDatabase()
 
     # Create test data
-    log.info("Creating test data...")
-    app_db.insert_complete_entry(
-        StateHistoryEntry(
-            datetime.now(),
-            Entity(
-                "light.test_light",
-                "Test Room",
-                {
-                    "test": True
-                },
-                False
-            ),
-            DomainLight(
-                True
-            ),
-            AutomationTrigger(
-                "automation.test_light_automation",
-                "Test Light Automation",
-                "button.test",
-                "Test Button"
-            )
-        )
-    )
+    # log.info("Creating test data...")
+    # app_db.insert_complete_entry(
+    #     StateHistoryEntry(
+    #         datetime.now(),
+    #         Entity(
+    #             "light.test_light",
+    #             "Test Room",
+    #             {
+    #                 "test": True
+    #             },
+    #             False
+    #         ),
+    #         DomainLight(
+    #             True
+    #         ),
+    #         AutomationTrigger(
+    #             "automation.test_light_automation",
+    #             "Test Light Automation",
+    #             "button.test",
+    #             "Test Button"
+    #         )
+    #     )
+    # )
+
+    # Connect to Home Assistant API
+    
     
 
 ### Application startup methods
