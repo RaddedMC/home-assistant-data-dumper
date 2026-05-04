@@ -1,5 +1,5 @@
 import datetime
-import placeholders
+from . import placeholders
 
 def error(msg):
     __log__(msg, "ERROR")

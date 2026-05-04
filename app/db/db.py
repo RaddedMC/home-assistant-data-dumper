@@ -3,6 +3,8 @@ from util import log
 from util import placeholders
 from . import domains
 import sys
+from .domains.generic import Domain
+import json
 
 class EntityHistoryDatabase:
     def __init__(self):
@@ -92,63 +94,18 @@ class EntityHistoryDatabase:
         
         if state_history_entry.automation_trigger:
             self._send_query(state_history_entry.automation_trigger.add_entry(state_history_id))
-            
 
-class StateHistoryEntry:
-    # An entry in the Entity History database.
-        # Timestamp, self explanatory
-        # Entity, see below
-        # Domain, see below
-        # Automation trigger, or none if not applicable
-    def __init__(self, timestamp, entity, domain, automation_trigger = None):
-        self.timestamp = timestamp
-        self.entity = entity
-        self.domain = domain
-        self.automation_trigger = automation_trigger
-        
-    @staticmethod
-    def create_table():
-        ### Create top level entity history table
-        # ID: A unique identifier for the particular state change.
-        # TimeStamp: The date and time that the event occurred.
-        # EntityID: A string that contains the ID of the entity which was changed.
-            # TODO: Maximum entity ID string length?
-        # EntityArea: A string that contains the area name of the entity, if available.
-            # TODO: Maximum entity area string length?
-        # AttributeJSON: A blob that contains the entity attributes in JSON. These values may be parsed for the subdomain tables.
-            # TODO: Maximum entity attributes string length?
-        # IsUnavailable: Unavailable entities may not contain the correct domain data. They may also be worth omitting in a dataset.
-        return """
-        CREATE TABLE IF NOT EXISTS EntityHistory (
-            ID INTEGER PRIMARY KEY,
-            TimeStamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            EntityID TEXT NOT NULL,
-            EntityArea TEXT,
-            AttributeJSON TEXT,
-            IsUnavailable BOOLEAN NOT NULL
-        );
-        """
+        # Commit all queries
+        self.conn.commit()
 
-    # Retrieves the SQL to create an entry
-    # Adding an actual entry needs to be done through the database, since it needs to reference the ID of this Entry
-    def add_entry(self):
-        return f"""
-        INSERT INTO EntityHistory (EntityID, EntityArea, AttributeJSON, IsUnavailable) VALUES (
-            {self.entity.entity_id},
-            {self.entity.entity_area},
-            {self.entity.attributes},
-            {self.entity.unavailable}
-        );
-        """
-        
-        
+
 class Entity:
     # An entity.
         # Entity ID
         # Entity Area name
         # List of attributes as JSON
         # Boolean, true if entity is marked as "unavailable"
-    def __init__(self, entity_id, entity_area, attributes, unavailable):
+    def __init__(self, entity_id: str, entity_area: str, attributes: any, unavailable: bool):
         self.entity_id = entity_id
         self.entity_area = entity_area
         self.attributes = attributes
@@ -157,7 +114,7 @@ class Entity:
 
 class AutomationTrigger:
     # An automation trigger. In Home Assistant, this is read as "X set to state Y triggered by automation A triggered by state of B"
-    def __init__(self, triggered_by_automation_id = None, triggered_by_automation_name = None, triggered_by_entity_id = None, triggered_by_entity_name = None):
+    def __init__(self, triggered_by_automation_id:str = None, triggered_by_automation_name:str = None, triggered_by_entity_id:str = None, triggered_by_entity_name:str = None):
         self.triggered_by_automation_id = triggered_by_automation_id
         self.triggered_by_automation_name = triggered_by_automation_name
         self.triggered_by_entity_id = triggered_by_entity_id
@@ -193,9 +150,57 @@ class AutomationTrigger:
         return f"""
         INSERT INTO AutomationTrigger (StateHistoryID, TriggeredByAutomationID, TriggeredByAutomationName, TriggeredByEntityID, TriggeredByEntityName) VALUES (
             {state_history_id},
-            {self.triggered_by_automation_id},
-            {self.triggered_by_automation_name},
-            {self.triggered_by_entity_id},
-            {self.triggered_by_entity_name}
+            '{self.triggered_by_automation_id}',
+            '{self.triggered_by_automation_name}',
+            '{self.triggered_by_entity_id}',
+            '{self.triggered_by_entity_name}'
+        );
+        """
+
+
+class StateHistoryEntry:
+    # An entry in the Entity History database.
+        # Timestamp, self explanatory
+        # Entity, see below
+        # Domain, see below
+        # Automation trigger, or none if not applicable
+    def __init__(self, timestamp: str, entity: Entity, domain: Domain, automation_trigger: AutomationTrigger = None):
+        self.timestamp = timestamp
+        self.entity = entity
+        self.domain = domain
+        self.automation_trigger = automation_trigger
+        
+    @staticmethod
+    def create_table():
+        ### Create top level entity history table
+        # ID: A unique identifier for the particular state change.
+        # TimeStamp: The date and time that the event occurred.
+        # EntityID: A string that contains the ID of the entity which was changed.
+            # TODO: Maximum entity ID string length?
+        # EntityArea: A string that contains the area name of the entity, if available.
+            # TODO: Maximum entity area string length?
+        # AttributeJSON: A blob that contains the entity attributes in JSON. These values may be parsed for the subdomain tables.
+            # TODO: Maximum entity attributes string length?
+        # IsUnavailable: Unavailable entities may not contain the correct domain data. They may also be worth omitting in a dataset.
+        return """
+        CREATE TABLE IF NOT EXISTS EntityHistory (
+            ID INTEGER PRIMARY KEY,
+            TimeStamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            EntityID TEXT NOT NULL,
+            EntityArea TEXT,
+            AttributeJSON TEXT,
+            IsUnavailable BOOLEAN NOT NULL
+        );
+        """
+
+    # Retrieves the SQL to create an entry
+    # Adding an actual entry needs to be done through the database, since it needs to reference the ID of this Entry
+    def add_entry(self):
+        return f"""
+        INSERT INTO EntityHistory (EntityID, EntityArea, AttributeJSON, IsUnavailable) VALUES (
+            '{self.entity.entity_id}',
+            '{self.entity.entity_area}',
+            '{json.dumps(self.entity.attributes)}',
+            {self.entity.unavailable}
         );
         """

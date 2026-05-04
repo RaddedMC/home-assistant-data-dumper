@@ -1,6 +1,9 @@
 from flask import Flask
 from util import log
-from db.db import EntityHistoryDatabase
+from db.db import EntityHistoryDatabase, StateHistoryEntry, Entity, AutomationTrigger
+from db.domains.light import DomainLight
+from db.domains.person import DomainPerson
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -13,6 +16,31 @@ def hello_world():
 def main():
     log.info("Starting addon...")
     app_db = EntityHistoryDatabase()
+
+    # Create test data
+    log.info("Creating test data...")
+    app_db.insert_complete_entry(
+        StateHistoryEntry(
+            datetime.now(),
+            Entity(
+                "light.test_light",
+                "Test Room",
+                {
+                    "test": True
+                },
+                False
+            ),
+            DomainLight(
+                True
+            ),
+            AutomationTrigger(
+                "automation.test_light_automation",
+                "Test Light Automation",
+                "button.test",
+                "Test Button"
+            )
+        )
+    )
     
 
 ### Application startup methods

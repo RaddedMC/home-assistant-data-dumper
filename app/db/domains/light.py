@@ -2,7 +2,7 @@ from .generic import Domain
 class DomainLight(Domain):
     # A Light.
     # TODO: We are starting with just keeping track of ON and OFF.
-    def __init__(self, state):
+    def __init__(self, state: bool):
         Domain.__init__(self, state)
 
     # create_table, which is not an object method and will be called once at runtime to retrieve the SQL to create the table.
