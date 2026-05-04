@@ -4,6 +4,7 @@ from db.db import EntityHistoryDatabase, StateHistoryEntry, Entity, AutomationTr
 from db.domains.light import DomainLight
 from db.domains.person import DomainPerson
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
@@ -15,7 +16,7 @@ def hello_world():
 # Startup
 def main():
     log.info("Starting addon...")
-    app_db = EntityHistoryDatabase()
+    # app_db = EntityHistoryDatabase()
 
     # Create test data
     # log.info("Creating test data...")
@@ -43,8 +44,17 @@ def main():
     # )
 
     # Connect to Home Assistant API
-    
-    
+    # Read bearer token
+    print(os.environ)
+    try:
+        API_TOKEN = os.environ["SUPERVISOR_TOKEN"]
+        print(API_TOKEN)
+    except KeyError:
+        print("Cannot get API key! Whoops!")
+
+    # Test connection
+
+
 
 ### Application startup methods
 
@@ -53,7 +63,7 @@ def main():
 if __name__ == "__main__":
     main()
     app.run(host="0.0.0.0", port=8067, debug=True) # TODO: Debug probably isn't the best for production!
-    
+
 # flask run
 # This should be called if ran by VSCode or just in general via Flask.
 main()

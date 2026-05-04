@@ -3,10 +3,7 @@ FROM ${BUILD_FROM}
 
 # Install requirements
 RUN \
-    apt-get update \
-    && apt-get install -y --no-install-recommends \
-        python3 python3-flask \
-    && rm -rf /var/lib/apt/lists/*
+    apk add --no-cache python3 py3-flask
 
 # Working directory
 WORKDIR /
@@ -14,4 +11,4 @@ WORKDIR /
 # Use CWD
 COPY app /
 
-CMD [ "python3", "app.py" ]
+CMD python3 app.py
