@@ -45,12 +45,14 @@ def main():
 
     # Connect to Home Assistant API
     # Read bearer token
-    print(os.environ)
+    log.info("Connecting to Home Assistant API...")
     try:
         API_TOKEN = os.environ["SUPERVISOR_TOKEN"]
-        print(API_TOKEN)
+        log.info("Token recieved!")
     except KeyError:
-        print("Cannot get API key! Whoops!")
+        log.warning("Did not recieve a supervisor token! This is normal if you aren't running the addon within Home Assistant.")
+    except Exception as e:
+        log.error(f"Some weird bullshit happened: {e}")
 
     # Test connection
 

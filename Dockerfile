@@ -10,5 +10,7 @@ WORKDIR /
 
 # Use CWD
 COPY app /
+COPY run.sh /
+RUN chmod a+x /run.sh
 
-CMD python3 app.py
+CMD /run.sh
