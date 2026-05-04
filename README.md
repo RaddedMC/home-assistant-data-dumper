@@ -15,6 +15,33 @@ A robust app to dump the time-series Entity state data from Home Assistant. This
   - Entity areas (whitelist, blacklist)
   - Entities (whitelist, blacklist)
 
+## installation
+
+### Existing HA instance:
+
+- Clone this repo into your Home Assistant `/root/addons` folder
+- In Home Assistant, go to Settings > Apps (formerly Addons) > Install App > Local Apps and install "Radded's Home Assistant Data Dumper
+- You can also do development using VSCode Remote SSH
+
+### TESTING
+
+#### Devcontainer (for local development)
+
+- Dependencies: Docker, Python, Git
+- Clone this repo to your system
+- Open it with Visual Studio Code
+- Run the Dev Container (you may be prompted to install a few extensions)
+- Once the container is running, go to Terminal -> Run Task -> Start Home Assistant
+
+#### Outside of HA (Useful for testing database, webserver)
+
+- Clone this repo to your system
+- Create a new virtual environment with `python -m venv .venv`
+- Activate the virtual environment with `source .venv/bin/activate`
+- Install the dependencies with `pip install -r requirements.txt`
+- Change directory into the `app` folder
+- Run `flask run` and enjoy!
+
 ## Database
 
 - `StateHistory`: A table that lists the changes to all Entities
