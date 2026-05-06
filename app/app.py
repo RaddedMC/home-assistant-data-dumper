@@ -1,15 +1,24 @@
-from flask import Flask
+from pathlib import Path
+
+from flask import Flask, send_from_directory
 from util import log
 from db.db import EntityHistoryDatabase
 from api.api import HomeAssistantAPI
 
 # Initialize Flask app
 app = Flask(__name__)
+dashboard_dir = Path(__file__).resolve().parent / "http" / "dashboard_main"
+
 
 # Routes
 @app.route("/")
 def hello_world():
-    return "Hello world"
+    return send_from_directory(dashboard_dir, "index.html")
+
+@app.route("/index.css")
+def dashboard_styles():
+    return send_from_directory(dashboard_dir, "index.css")
+
 
 # Startup
 def main():
@@ -20,6 +29,7 @@ def main():
 
     # Initialize API connection
     hass_api = HomeAssistantAPI()
+
 
 ### Application startup methods
 
