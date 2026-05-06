@@ -48,7 +48,7 @@ def main():
     log.info("Connecting to Home Assistant API...")
     try:
         API_TOKEN = os.environ["SUPERVISOR_TOKEN"]
-        log.toomuchinfo(API_TOKEN)
+        log.toomuchinfo(f"Your API token is: f{API_TOKEN}")
         log.info("Token recieved!")
     except KeyError:
         log.warning("Did not recieve a supervisor token! This is normal if you aren't running the addon within Home Assistant.")
