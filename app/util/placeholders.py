@@ -1,11 +1,14 @@
-from enum import Enum
+from .log_level import LOG_LEVELS
 
+# Do not change
 DATABASE_VERSION = 1
-HASS_API_URL = "http://supervisor/core/api" # If you aren't running the data dumper in Home Assistant, change this to match your instance!
 
-LOG_LEVELS = Enum("Log Levels", [
-    ("INSANE", 0), # Warning: This may reveal API keys and SQL statements in your logs!
-    ("NORMAL", 1), # Will display verbose "info" messages
-    ("STFU", 2)
-])
-LOG_LEVEL = LOG_LEVELS.NORMAL
+# Change only if you are running OUTSIDE of Home Assistant
+HASS_API_URL = "http://supervisor/core/api"
+
+# TODO: Change this to Normal before sharing
+# Set your log level
+# - INSANE -- Logs all SQL and API queries. Great for development testing, but may LEAK KEYS!
+# - NORMAL -- Recommended for all users.
+# - SILENT -- Logs only errors and warnings.
+LOG_LEVEL = LOG_LEVELS.INSANE
