@@ -14,7 +14,7 @@ class EntityHistoryDatabase:
         self.conn = sqlite3.connect("radded_data_dumper.sqlite3")
         self.cur = self.conn.cursor()
         
-        self._send_query("""
+        self.__send_query("""
         CREATE TABLE IF NOT EXISTS DatadumperMigrations (
             version INT PRIMARY KEY,
             migratedAt DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -22,14 +22,14 @@ class EntityHistoryDatabase:
         """)
         
         ### Check database version
-        local_db_version = self._send_query("""
+        local_db_version = self.__send_query("""
         SELECT MAX(version) FROM DatadumperMigrations;
         """).fetchone()[0]
         
         # First time launch
         if local_db_version is None:
             log.info("Detected first time launch")
-            self._send_query("""
+            self.__send_query("""
             INSERT INTO DatadumperMigrations (version) VALUES (1);
             """)
         elif local_db_version == placeholders.DATABASE_VERSION:
@@ -44,12 +44,12 @@ class EntityHistoryDatabase:
 
 
         ### Create top level Entity History table
-        self._send_query(StateHistoryEntry.create_table())
+        self.__send_query(StateHistoryEntry.create_table())
         log.info("-> Created EntityHistory table")
 
 
         ### Create automation trigger table
-        self._send_query(AutomationTrigger.create_table())
+        self.__send_query(AutomationTrigger.create_table())
         log.info("-> Created AutomationTrigger table")
 
 
@@ -72,7 +72,7 @@ class EntityHistoryDatabase:
         for domain_name, domain_class in self.domain_classes:
             if hasattr(domain_class, 'create_table'):
                 print(domain_class.create_table())
-                self._send_query(domain_class.create_table())
+                self.__send_query(domain_class.create_table())
                 log.info(f"-> Created {domain_name} table")
             else:
                 log.info(f"-> Error! {domain_name} does not have a create_table function.")
@@ -80,20 +80,20 @@ class EntityHistoryDatabase:
         ### Commit all of the above
         self.conn.commit()
         
-    def _send_query(self, query):
+    def __send_query(self, query):
         log.toomuchinfo(f"Sending SQL: {query}")
         return self.cur.execute(query)
 
     def insert_complete_entry(self, state_history_entry):
         # Start by inserting the StateHistoryEntry by itself, to get its ID
-        self._send_query(state_history_entry.add_entry())
+        self.__send_query(state_history_entry.add_entry())
         state_history_id = self.cur.lastrowid
         
         # Now insert the domain and automation trigger
-        self._send_query(state_history_entry.domain.add_entry(state_history_id))
+        self.__send_query(state_history_entry.domain.add_entry(state_history_id))
         
         if state_history_entry.automation_trigger:
-            self._send_query(state_history_entry.automation_trigger.add_entry(state_history_id))
+            self.__send_query(state_history_entry.automation_trigger.add_entry(state_history_id))
 
         # Commit all queries
         self.conn.commit()
