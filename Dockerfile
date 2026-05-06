@@ -3,7 +3,7 @@ FROM ${BUILD_FROM}
 
 # Install requirements
 RUN \
-    apk add --no-cache python3 py3-flask
+    apk add --no-cache python3 py3-flask py3-requests
 
 # Working directory
 WORKDIR /

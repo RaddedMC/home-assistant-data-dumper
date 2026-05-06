@@ -1,10 +1,12 @@
 from flask import Flask
 from util import log
+from util.placeholders import *
 from db.db import EntityHistoryDatabase, StateHistoryEntry, Entity, AutomationTrigger
 from db.domains.light import DomainLight
 from db.domains.person import DomainPerson
 from datetime import datetime
 import os
+import requests
 
 app = Flask(__name__)
 
@@ -16,32 +18,9 @@ def hello_world():
 # Startup
 def main():
     log.info("Starting addon...")
-    # app_db = EntityHistoryDatabase()
 
-    # Create test data
-    # log.info("Creating test data...")
-    # app_db.insert_complete_entry(
-    #     StateHistoryEntry(
-    #         datetime.now(),
-    #         Entity(
-    #             "light.test_light",
-    #             "Test Room",
-    #             {
-    #                 "test": True
-    #             },
-    #             False
-    #         ),
-    #         DomainLight(
-    #             True
-    #         ),
-    #         AutomationTrigger(
-    #             "automation.test_light_automation",
-    #             "Test Light Automation",
-    #             "button.test",
-    #             "Test Button"
-    #         )
-    #     )
-    # )
+    # Initialize database
+    app_db = EntityHistoryDatabase()
 
     # Connect to Home Assistant API
     # Read bearer token
@@ -50,14 +29,19 @@ def main():
         API_TOKEN = os.environ["SUPERVISOR_TOKEN"]
         log.toomuchinfo(f"Your API token is: f{API_TOKEN}")
         log.info("Token recieved!")
-    except KeyError:
-        log.warning("Did not recieve a supervisor token! This is normal if you aren't running the addon within Home Assistant.")
+    except KeyError as e:
+        log.error("Did not recieve a supervisor token! This is normal if you aren't running the addon within Home Assistant.")
+        raise e
     except Exception as e:
-        log.error(f"Some weird bullshit happened: {e}")
+        log.error(f"Something unexpected happened during API connection: {e}")
+        raise e
 
     # Test connection
-
-
+    test_request = requests.get(HASS_API_URL + "/states/input_boolean.test", headers = {
+        'Authorization': f'Bearer {API_TOKEN}'
+    })
+    print(test_request.content)
+    print(test_request.status_code)
 
 ### Application startup methods
 
