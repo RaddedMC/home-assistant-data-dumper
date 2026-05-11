@@ -31,16 +31,7 @@ A robust app to dump the time-series Entity state data from Home Assistant. This
 - Clone this repo to your system
 - Open it with Visual Studio Code
 - Run the Dev Container (you may be prompted to install a few extensions)
-- Once the container is running, go to Terminal -> Run Task -> Start Home Assistant
-
-#### Outside of HA (Useful for testing database, webserver)
-
-- Clone this repo to your system
-- Create a new virtual environment with `python -m venv .venv`
-- Activate the virtual environment with `source .venv/bin/activate`
-- Install the dependencies with `pip install -r requirements.txt`
-- Change directory into the `app` folder
-- Run `flask run` and enjoy!
+- Once the container is running, go to Terminal -> Run Task -> Start Home Assistant and continue from "Existing HA instance" above.
 
 ## Database
 
