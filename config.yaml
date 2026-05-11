@@ -1,6 +1,6 @@
 name: "Radded's Home Assistant Data Dumper"
 description: "Dump time-series entity state data from Home Assistant."
-version: 0.4_alpha_vibeui
+version: 0.4251_alpha_flask_serve
 slug: "radded_data_dumper"
 url: https://github.com/RaddedMC/home-assistant-data-dumper
 init: false

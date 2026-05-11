@@ -6,19 +6,16 @@ from db.db import EntityHistoryDatabase
 from api.api import HomeAssistantAPI
 
 # Initialize Flask app
-app = Flask(__name__)
-dashboard_dir = Path(__file__).resolve().parent / "http" / "dashboard_main"
-
+app = Flask(__name__, static_url_path="", static_folder="frontend")
 
 # Routes
-@app.route("/")
-def hello_world():
-    return send_from_directory(dashboard_dir, "index.html")
+@app.route("/index.html")
+def frontend_root():
+    return render_template()
 
-@app.route("/index.css")
-def dashboard_styles():
-    return send_from_directory(dashboard_dir, "index.css")
-
+@app.route("/api")
+def api_root():
+    return "hello world!"
 
 # Startup
 def main():
