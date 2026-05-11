@@ -12,7 +12,7 @@ app = Flask(__name__, static_url_path="", static_folder=BUILT_FRONTEND_PATH)
 # Routes
 @app.route("/api")
 def api_root():
-    return "hello world!"
+    return "bello world!"
 
 # Startup
 def main():
