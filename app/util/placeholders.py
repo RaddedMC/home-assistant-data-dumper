@@ -14,4 +14,4 @@ HASS_API_URL = "http://supervisor/core/api"
 LOG_LEVEL = LOG_LEVELS.INSANE
 
 # Change only if you are running OUTSIDE of Home Assistant
-FRONTEND_PATH = "/frontend"
+BUILT_FRONTEND_PATH = "/frontend/dist"

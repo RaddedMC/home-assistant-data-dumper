@@ -2,12 +2,12 @@ from pathlib import Path
 
 from flask import Flask, render_template
 from util import log
-from util.placeholders import FRONTEND_PATH
+from util.placeholders import BUILT_FRONTEND_PATH
 from db.db import EntityHistoryDatabase
 from api.api import HomeAssistantAPI
 
 # Initialize Flask app
-app = Flask(__name__, static_url_path="", static_folder=FRONTEND_PATH)
+app = Flask(__name__, static_url_path="", static_folder=BUILT_FRONTEND_PATH)
 
 # Routes
 @app.route("/api")
