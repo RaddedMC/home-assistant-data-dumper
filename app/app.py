@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from flask import Flask, render_template
+from flask import Flask, redirect
 from util import log
 from util.placeholders import BUILT_FRONTEND_PATH
 from db.db import EntityHistoryDatabase
@@ -10,6 +10,10 @@ from api.api import HomeAssistantAPI
 app = Flask(__name__, static_url_path="", static_folder=BUILT_FRONTEND_PATH)
 
 # Routes
+@app.route("/")
+def redirect_index():
+    return redirect("/index.html")
+
 @app.route("/api")
 def api_root():
     return "bello world!"
