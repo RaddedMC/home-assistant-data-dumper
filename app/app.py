@@ -1,18 +1,15 @@
 from pathlib import Path
 
-from flask import Flask, send_from_directory
+from flask import Flask, render_template
 from util import log
+from util.placeholders import FRONTEND_PATH
 from db.db import EntityHistoryDatabase
 from api.api import HomeAssistantAPI
 
 # Initialize Flask app
-app = Flask(__name__, static_url_path="", static_folder="frontend")
+app = Flask(__name__, static_url_path="", static_folder=FRONTEND_PATH)
 
 # Routes
-@app.route("/index.html")
-def frontend_root():
-    return render_template()
-
 @app.route("/api")
 def api_root():
     return "hello world!"

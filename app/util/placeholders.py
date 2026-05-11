@@ -12,3 +12,6 @@ HASS_API_URL = "http://supervisor/core/api"
 # - NORMAL -- Recommended for all users.
 # - SILENT -- Logs only errors and warnings.
 LOG_LEVEL = LOG_LEVELS.INSANE
+
+# Change only if you are running OUTSIDE of Home Assistant
+FRONTEND_PATH = "/frontend"
