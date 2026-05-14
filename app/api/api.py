@@ -14,7 +14,7 @@ class HomeAssistantAPI:
         self.__API_TOKEN = None
         try:
             self.__API_TOKEN = os.environ["SUPERVISOR_TOKEN"]
-            log.toomuchinfo(f"Your API token is: f{self.__API_TOKEN}")
+            log.toomuchinfo(f"Your API token is: {self.__API_TOKEN}")
             log.info("Token recieved!")
         except KeyError as e:
             log.error("Token not provided through environment variables. This is expected if you are not running this application within Home Assistant.")
